@@ -1,0 +1,34 @@
+[project]
+name = "harmonizer"
+version = "0.1.0"
+description = "Agentic HS tariff-code classification on open-weight models"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+    "httpx>=0.27",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "rich>=13",
+    "typer>=0.12",
+]
+
+[project.scripts]
+hz = "harmonizer.cli:app"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["harmonizer"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008"]  # typer.Option in defaults is the typer idiom
