@@ -9,6 +9,7 @@ dependencies = [
     "psycopg[binary]>=3.2",
     "pydantic>=2.8",
     "pydantic-settings>=2.4",
+    "rank-bm25>=0.2.2",
     "rich>=13",
     "typer>=0.12",
 ]
