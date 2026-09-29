@@ -1,9 +1,10 @@
 """Candidate retrieval over precedents (past rulings) and ten-digit tariff lines.
 
-Three modes share one interface:
+Four modes share one interface:
   dense   bge-m3 vectors in pgvector
-  bm25    rank_bm25 over the same texts, held in memory (about 50k short docs)
+  bm25    rank_bm25 over the same texts, held in memory (about 30k short docs)
   hybrid  reciprocal rank fusion of the two
+  rerank  hybrid top 50, reordered by a cross-encoder (see rerank.py)
 """
 
 from __future__ import annotations
@@ -22,6 +23,8 @@ STOPWORDS = frozenset(
 )
 RRF_K = 60
 FUSE_DEPTH = 100
+RERANK_DEPTH = 50
+MODES = ("dense", "bm25", "hybrid", "rerank")
 
 
 def tokenize(text: str) -> list[str]:
@@ -48,8 +51,9 @@ def _rrf(*ranked: list[Candidate], k: int) -> list[Candidate]:
 
 
 class Retriever:
-    def __init__(self, conn) -> None:
+    def __init__(self, conn, reranker=None) -> None:
         self.conn = conn
+        self.reranker = reranker
         rows = conn.execute(
             "SELECT ruling_number, tariff_codes[1], query_text, ruling_date FROM cross_ruling "
             "WHERE embedding IS NOT NULL AND cardinality(tariff_codes) = 1"
@@ -109,12 +113,14 @@ class Retriever:
             return self._precedents_dense(emb, k, before, exclude)
         if mode == "bm25":
             return self._precedents_bm25(text, k, before, exclude)
-        depth = max(k, FUSE_DEPTH)
-        return _rrf(
-            self._precedents_dense(emb, depth, before, exclude),
-            self._precedents_bm25(text, depth, before, exclude),
-            k=k,
+        fused = _rrf(
+            self._precedents_dense(emb, FUSE_DEPTH, before, exclude),
+            self._precedents_bm25(text, FUSE_DEPTH, before, exclude),
+            k=RERANK_DEPTH if mode == "rerank" else max(k, RERANK_DEPTH),
         )
+        if mode == "rerank":
+            return self._reranker().rerank(text, fused, k)
+        return fused[:k]
 
     # tariff lines -----------------------------------------------------------
 
@@ -137,5 +143,16 @@ class Retriever:
             return self._lines_dense(emb, k)
         if mode == "bm25":
             return self._lines_bm25(text, k)
-        depth = max(k, FUSE_DEPTH)
-        return _rrf(self._lines_dense(emb, depth), self._lines_bm25(text, depth), k=k)
+        fused = _rrf(
+            self._lines_dense(emb, FUSE_DEPTH),
+            self._lines_bm25(text, FUSE_DEPTH),
+            k=RERANK_DEPTH if mode == "rerank" else max(k, RERANK_DEPTH),
+        )
+        if mode == "rerank":
+            return self._reranker().rerank(text, fused, k)
+        return fused[:k]
+
+    def _reranker(self):
+        if self.reranker is None:
+            raise ValueError("mode='rerank' needs a Reranker; pass one to Retriever()")
+        return self.reranker
