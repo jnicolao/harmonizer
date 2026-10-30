@@ -44,6 +44,7 @@ ollama pull bge-m3 && ollama pull qwen3:8b
 ./hz eval baseline --split test
 ./hz eval recall --split test    # recall@k per retrieval mode, the ceiling for later stages
 ./hz eval rerank-ablation        # does a cross-encoder help? measured on the dev split
+./hz eval vote --split test      # nearest ruling vs flat and hierarchical voting over neighbours
 ```
 
 ## Models
