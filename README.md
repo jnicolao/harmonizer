@@ -9,12 +9,13 @@ Everything runs locally. No paid APIs are used anywhere in this project.
 
 ## Status
 
-Retrieval layer. The US tariff schedule and 22k CBP rulings are in Postgres
-with bge-m3 embeddings and an in-memory BM25 index. Dense, BM25 and fused
-retrieval are scored against a held-out set of recent rulings, both for top-1
-accuracy and for candidate recall at k. A cross-encoder reranker was measured
-and did not beat fusion in any configuration, so it stays opt-in
-(`hz eval rerank-ablation` reproduces that result). Reports live in `evals/reports/`.
+Retrieval layer plus the first agent node. The US tariff schedule and 22k
+CBP rulings are in Postgres with bge-m3 embeddings and an in-memory BM25
+index. Fused retrieval feeds a hierarchical vote over the nearest past
+rulings, which is the no-model floor, and a Qwen3 8B adjudicator that argues
+for one candidate with a cited precedent. Every stage is scored on the same
+held-out rulings so each addition has a measured lift. A cross-encoder
+reranker was measured and did not beat fusion, so it stays opt-in. Reports live in `evals/reports/`.
 
 ## Data sources
 
@@ -45,6 +46,7 @@ ollama pull bge-m3 && ollama pull qwen3:8b
 ./hz eval recall --split test    # recall@k per retrieval mode, the ceiling for later stages
 ./hz eval rerank-ablation        # does a cross-encoder help? measured on the dev split
 ./hz eval vote --split test      # nearest ruling vs flat and hierarchical voting over neighbours
+./hz eval adjudicate --split dev # Qwen3 adjudicator vs the voting floor, paired per item
 ```
 
 ## Models
@@ -55,7 +57,7 @@ All inference is local through Ollama. No paid or hosted APIs are used.
 |---|---|---|
 | bge-m3 | MIT | Embeddings for tariff lines and rulings, served by Ollama |
 | bge-reranker-v2-m3 | Apache-2.0 | Cross-encoder reranking, opt-in only; measured and not adopted, weights cached in `data/hf` |
-| Qwen3 8B | Apache-2.0 | Classification and verification (next milestone) |
+| Qwen3 8B | Apache-2.0 | Adjudicator: picks a code among retrieved candidates with a cited ruling, structured output, thinking off |
 
 ## Layout
 
