@@ -31,7 +31,7 @@ Both are US government works in the public domain.
 Requirements: Docker, [uv](https://docs.astral.sh/uv/), [Ollama](https://ollama.com).
 
 ```bash
-docker compose up -d           # Postgres 17 with pgvector
+docker compose up -d           # Postgres 17 with pgvector, published on host port 5434
 cd apps/api && uv sync && cd ../..
 ollama pull bge-m3 && ollama pull qwen3:8b
 ./hz db migrate                # apply sql/*.sql, idempotent
