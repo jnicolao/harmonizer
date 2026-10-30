@@ -1,0 +1,62 @@
+{
+  "date": "2026-09-29",
+  "split": "dev",
+  "n": 100,
+  "depth": 50,
+  "reranker": {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "device": "mps",
+    "dtype": "float16 on mps"
+  },
+  "results": {
+    "precedents fused (control)": {
+      "recall@5@6": 0.59,
+      "recall@10@6": 0.63,
+      "top1@6": 0.44,
+      "top1@10": 0.27,
+      "seconds_per_query": 0.0
+    },
+    "lines fused (control)": {
+      "recall@5@6": 0.38,
+      "recall@10@6": 0.46,
+      "top1@6": 0.17,
+      "top1@10": 0.08,
+      "seconds_per_query": 0.0
+    },
+    "precedents rerank desc vs desc": {
+      "recall@5@6": 0.49,
+      "recall@10@6": 0.59,
+      "top1@6": 0.26,
+      "top1@10": 0.16,
+      "seconds_per_query": 3.19649972166997
+    },
+    "precedents rerank subject vs subject": {
+      "recall@5@6": 0.53,
+      "recall@10@6": 0.62,
+      "top1@6": 0.32,
+      "top1@10": 0.18,
+      "seconds_per_query": 0.3717096387499623
+    },
+    "precedents rerank first 320 chars both": {
+      "recall@5@6": 0.49,
+      "recall@10@6": 0.61,
+      "top1@6": 0.29,
+      "top1@10": 0.2,
+      "seconds_per_query": 1.304991006670025
+    },
+    "lines rerank desc vs path": {
+      "recall@5@6": 0.33,
+      "recall@10@6": 0.44,
+      "top1@6": 0.09,
+      "top1@10": 0.03,
+      "seconds_per_query": 2.474922514159989
+    },
+    "lines rerank first 320 chars vs path": {
+      "recall@5@6": 0.36,
+      "recall@10@6": 0.51,
+      "top1@6": 0.17,
+      "top1@10": 0.08,
+      "seconds_per_query": 1.552689221670007
+    }
+  }
+}

@@ -11,8 +11,10 @@ Everything runs locally. No paid APIs are used anywhere in this project.
 
 Retrieval layer. The US tariff schedule and 22k CBP rulings are in Postgres
 with bge-m3 embeddings and an in-memory BM25 index. Dense, BM25 and fused
-retrieval are scored against a held-out set of recent rulings, both for
-top-1 accuracy and for candidate recall at k. Reports live in `evals/reports/`.
+retrieval are scored against a held-out set of recent rulings, both for top-1
+accuracy and for candidate recall at k. A cross-encoder reranker was measured
+and did not beat fusion in any configuration, so it stays opt-in
+(`hz eval rerank-ablation` reproduces that result). Reports live in `evals/reports/`.
 
 ## Data sources
 
@@ -41,6 +43,7 @@ ollama pull bge-m3 && ollama pull qwen3:8b
 ./hz eval split                # 100 dev + 1,000 test rulings, deterministic
 ./hz eval baseline --split test
 ./hz eval recall --split test    # recall@k per retrieval mode, the ceiling for later stages
+./hz eval rerank-ablation        # does a cross-encoder help? measured on the dev split
 ```
 
 ## Models
@@ -49,7 +52,8 @@ All inference is local through Ollama. No paid or hosted APIs are used.
 
 | Model | Licence | Role |
 |---|---|---|
-| bge-m3 | MIT | Embeddings for tariff lines and rulings |
+| bge-m3 | MIT | Embeddings for tariff lines and rulings, served by Ollama |
+| bge-reranker-v2-m3 | Apache-2.0 | Cross-encoder reranking, opt-in only; measured and not adopted, weights cached in `data/hf` |
 | Qwen3 8B | Apache-2.0 | Classification and verification (next milestone) |
 
 ## Layout

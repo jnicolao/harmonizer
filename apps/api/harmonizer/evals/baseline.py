@@ -15,11 +15,12 @@ from rich.table import Table
 
 from harmonizer.db import connect
 from harmonizer.evals.data import REPORTS, load_items
+from harmonizer.evals.recall import _parse_modes
 from harmonizer.ollama import EMBED_MODEL
+from harmonizer.rerank import Reranker
 from harmonizer.retrieval import Retriever
 
 LEVELS = (2, 4, 6, 8, 10)
-MODES = ("dense", "bm25", "hybrid")
 POOLS = ("lines", "precedents")
 
 
@@ -68,15 +69,20 @@ def _score(pairs: list[tuple[str, list[str]]]) -> dict[str, float]:
     return out
 
 
-def baseline(split_name: str = typer.Option("test", "--split"), k: int = 5) -> None:
+def baseline(
+    split_name: str = typer.Option("test", "--split"),
+    k: int = 5,
+    modes: str = typer.Option("dense,bm25,hybrid", help="Subset of dense,bm25,hybrid,rerank"),
+) -> None:
     """Score the retrieval-only baselines on a split and write a JSON report."""
     with connect() as conn:
         conn.execute("SET hnsw.ef_search = 200")
-        retriever = Retriever(conn)
+        chosen = _parse_modes(modes)
+        retriever = Retriever(conn, Reranker() if "rerank" in chosen else None)
         items = load_items(conn, split_name)
         methods: dict[str, dict[str, float]] = {}
         for pool in POOLS:
-            for mode in MODES:
+            for mode in chosen:
                 pairs: list[tuple[str, list[str]]] = []
                 for item in items:
                     if pool == "precedents":
