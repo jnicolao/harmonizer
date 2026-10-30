@@ -9,9 +9,10 @@ Everything runs locally. No paid APIs are used anywhere in this project.
 
 ## Status
 
-Milestone 2: retrieval baselines. The US tariff schedule and 22k CBP rulings
-are in Postgres with bge-m3 embeddings, and two retrieval-only baselines are
-scored against a held-out set of recent rulings. Reports live in `evals/reports/`.
+Retrieval layer. The US tariff schedule and 22k CBP rulings are in Postgres
+with bge-m3 embeddings and an in-memory BM25 index. Dense, BM25 and fused
+retrieval are scored against a held-out set of recent rulings, both for
+top-1 accuracy and for candidate recall at k. Reports live in `evals/reports/`.
 
 ## Data sources
 
@@ -39,6 +40,7 @@ ollama pull bge-m3 && ollama pull qwen3:8b
 ./hz index rulings             # distil each ruling to a product description, embed it
 ./hz eval split                # 100 dev + 1,000 test rulings, deterministic
 ./hz eval baseline --split test
+./hz eval recall --split test    # recall@k per retrieval mode, the ceiling for later stages
 ```
 
 ## Models

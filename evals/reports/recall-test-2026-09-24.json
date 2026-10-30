@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-24",
+  "split": "test",
+  "n": 1000,
+  "ks": [
+    5,
+    10,
+    20,
+    50
+  ],
+  "levels": [
+    4,
+    6,
+    10
+  ],
+  "methods": {
+    "precedents-dense": {
+      "recall@5@4": 0.671,
+      "recall@5@6": 0.552,
+      "recall@5@10": 0.396,
+      "recall@10@4": 0.748,
+      "recall@10@6": 0.626,
+      "recall@10@10": 0.452,
+      "recall@20@4": 0.808,
+      "recall@20@6": 0.69,
+      "recall@20@10": 0.507,
+      "recall@50@4": 0.87,
+      "recall@50@6": 0.76,
+      "recall@50@10": 0.568
+    },
+    "precedents-bm25": {
+      "recall@5@4": 0.718,
+      "recall@5@6": 0.585,
+      "recall@5@10": 0.419,
+      "recall@10@4": 0.773,
+      "recall@10@6": 0.649,
+      "recall@10@10": 0.475,
+      "recall@20@4": 0.826,
+      "recall@20@6": 0.705,
+      "recall@20@10": 0.52,
+      "recall@50@4": 0.891,
+      "recall@50@6": 0.776,
+      "recall@50@10": 0.578
+    },
+    "precedents-hybrid": {
+      "recall@5@4": 0.727,
+      "recall@5@6": 0.604,
+      "recall@5@10": 0.442,
+      "recall@10@4": 0.794,
+      "recall@10@6": 0.667,
+      "recall@10@10": 0.495,
+      "recall@20@4": 0.851,
+      "recall@20@6": 0.726,
+      "recall@20@10": 0.538,
+      "recall@50@4": 0.904,
+      "recall@50@6": 0.794,
+      "recall@50@10": 0.605
+    },
+    "lines-dense": {
+      "recall@5@4": 0.4,
+      "recall@5@6": 0.281,
+      "recall@5@10": 0.123,
+      "recall@10@4": 0.455,
+      "recall@10@6": 0.349,
+      "recall@10@10": 0.187,
+      "recall@20@4": 0.513,
+      "recall@20@6": 0.424,
+      "recall@20@10": 0.248,
+      "recall@50@4": 0.603,
+      "recall@50@6": 0.512,
+      "recall@50@10": 0.349
+    },
+    "lines-bm25": {
+      "recall@5@4": 0.286,
+      "recall@5@6": 0.183,
+      "recall@5@10": 0.109,
+      "recall@10@4": 0.334,
+      "recall@10@6": 0.243,
+      "recall@10@10": 0.155,
+      "recall@20@4": 0.405,
+      "recall@20@6": 0.31,
+      "recall@20@10": 0.206,
+      "recall@50@4": 0.51,
+      "recall@50@6": 0.413,
+      "recall@50@10": 0.269
+    },
+    "lines-hybrid": {
+      "recall@5@4": 0.443,
+      "recall@5@6": 0.308,
+      "recall@5@10": 0.148,
+      "recall@10@4": 0.502,
+      "recall@10@6": 0.373,
+      "recall@10@10": 0.214,
+      "recall@20@4": 0.565,
+      "recall@20@6": 0.452,
+      "recall@20@10": 0.287,
+      "recall@50@4": 0.673,
+      "recall@50@6": 0.567,
+      "recall@50@10": 0.389
+    }
+  }
+}
